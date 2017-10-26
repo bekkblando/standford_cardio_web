@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "firebase": "^4.6.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
+    "react-firebase": "^2.2.7-4",
     "react-tinymce": "0.7.0"
   },
   "devDependencies": {

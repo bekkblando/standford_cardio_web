@@ -4,19 +4,25 @@ import TinyMCE from 'react-tinymce';
 import './App.css';
 
 class App extends Component {
-  handleEditorChange(e) {
-    console.log(e.target.getContent());
+  constructor(props) {
+    super(props);
+
+    // This binding is necessary to make `this` work in the callback
+    this.save_manual = this.save_manual.bind(this);
   }
+
+  save_manual(){
+    this.props.manual_ref.set(document.getElementById("manual").innerHTML);
+  }
+
   render() {
+
+    // Output TinyMCE if successful
     return (
-      <TinyMCE
-        content="<p>This is the initial content of the editor</p>"
-        config={{
-          plugins: 'autolink link image lists print preview',
-          toolbar: 'undo redo | bold italic | alignleft aligncenter alignright'
-        }}
-        onChange={this.handleEditorChange}
-      />
+      <div>
+        <button id="save_manual" onClick={this.save_manual}>Save Manual</button>
+        <div contentEditable id="manual">Manual Loading</div>
+      </div>
     );
   }
 }
