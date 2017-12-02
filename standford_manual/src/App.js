@@ -1,30 +1,33 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import TinyMCE from 'react-tinymce';
-import './App.css';
+// This component handles the App template used on every page.
+import React from 'react';
+import PropTypes from 'prop-types';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
+import Manual from './Manual';
+import Login from './auth/Login';
+import PrivateRoute from './auth/PrivateRoute';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-
-    // This binding is necessary to make `this` work in the callback
-    this.save_manual = this.save_manual.bind(this);
-  }
-
-  save_manual(){
-    this.props.manual_ref.set(document.getElementById("manual").innerHTML);
-  }
-
-  render() {
-
-    // Output TinyMCE if successful
-    return (
+const App = ({ authenticated, checked }) => (
+  <Router>
+    { checked &&
       <div>
-        <button id="save_manual" onClick={this.save_manual}>Save Manual</button>
-        <div contentEditable id="manual">Manual Loading</div>
+        <PrivateRoute exact path="/" component={Manual} authenticated={authenticated}/>
+        <Route path="/login" component={Login}/>
       </div>
-    );
-  }
-}
+    }
+  </Router>
+);
 
-export default App;
+const { bool } = PropTypes;
+
+App.propTypes = {
+  authenticated: bool.isRequired,
+  checked: bool.isRequired
+};
+
+const mapState = ({ session }) => ({
+  checked: session.checked,
+  authenticated: session.authenticated
+});
+
+export default connect(mapState)(App);
