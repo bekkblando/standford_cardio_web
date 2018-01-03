@@ -5,6 +5,7 @@ export const login = (user, history) => {
   return () => {
     return sessionApi.login(user).then(response => {
       // Invalid user
+      console.log(response["token"])
       if(response["token"] === 0){
         throw response["email"];
       }
@@ -13,7 +14,7 @@ export const login = (user, history) => {
       .then(() => {
         sessionService.saveUser(response.data)
         .then(() => {
-          history.push('/');
+          history.push('/manual');
         }).catch(err => console.error(err));
       }).catch(err => console.error(err));
     });
