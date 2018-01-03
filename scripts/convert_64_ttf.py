@@ -1,10 +1,21 @@
 from bs4 import BeautifulSoup
-import urllib.request
+#import urllib.request
+import requests
+from requests_file import FileAdapter
 import base64
+import os
+
 
 # Parse the HTML from file
 # TODO Absolute path not ideal - CHANGEME on other file systems
-r = urllib.request.urlopen('file:///Users/BekkBlando/Documents/github/Stanford-Web/scripts/outhandbook.html').read()
+#r = urllib.request.urlopen('file:///Users/BekkBlando/Documents/github/Stanford-Web/scripts/outhandbook.html').read()
+# rewoked it by using requests instead of urllib bc it was throwing me an error
+url = "file://"  + str(os.getcwd()) + "/outhandbook.html"
+s = requests.Session()
+s.mount("file://", FileAdapter())
+resp = s.get(url)
+r = resp.text
+
 old_manual = BeautifulSoup(r)
 
 # Get our image tags

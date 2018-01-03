@@ -42,3 +42,6 @@ docs/api/
 
 node_modules/
 npm-debug.log
+
+#env so it doesn't crash
+env
