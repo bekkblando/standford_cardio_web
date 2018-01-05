@@ -19,12 +19,15 @@ secondPageTableContents = manual.find_all(id='pf2')
 contentString = str(firstPageTableContents) + str(secondPageTableContents)
 # Make the BeautifulSoup object from the combined string
 pageTableContents = BeautifulSoup(contentString, "html.parser")
-#print(pageTableContents)
+# print(pageTableContents)
 
 parsed_manual = {}
 # Last tags
 first_layer = ""
 second_layer = ""
+# Grab our keys for later use
+first_layer_keys = []
+second_layer_keys = []
 
 # If the first layer tag is
 for tag in pageTableContents.descendants:
@@ -41,15 +44,16 @@ for tag in pageTableContents.descendants:
 
     # If it's a first layer tag
     # class: (x2 || x4) && h3
-    #print(cleaned, classes)
     if(("x2" in classes or "x4" in classes) and ("h3" in classes)):
         first_layer = cleaned
+        first_layer_keys.append(cleaned)
         parsed_manual[cleaned] = {}
 
     # If the first layer tag is set and it's a second layer tag
     # class: (x2 || x4) && h5 add it to the first layer tags JSON
     elif(("x2" in classes or "x4" in classes) and ("h5" in classes)):
         second_layer = cleaned
+        second_layer_keys.append(cleaned)
         parsed_manual[first_layer][cleaned] = {}
 
     # If the second layer tag is set and it's a third layer tag
@@ -70,29 +74,11 @@ json_contents = json.dumps(
     )
 
 # Pretty print yo
-#print(json_contents)
+# print(json_contents)
 # Store the section names in a list
 
 # Iterate through all the tags and if the tag's value is in the section list
 # capture the content aside from tags that have a value in the section list
-
-# Was thinking about going page by page and get the first layer id based on the span with class='h1'
-pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
-
-h2s = manual.findAll("div", {"class": "h2"})
-for tag in h2s:
-    cleaned = re.sub(r"<[^>]*>", "", str(tag))
-    #print cleaned
-
-first_layer_keys = parsed_manual.keys()
-
-second_layer_keys = []
-for value in parsed_manual.values():
-    for key in value:
-        if key not in second_layer_keys:
-            second_layer_keys.append(key)
-        else:
-            continue
 
 first_layer = ""
 second_layer = ""
@@ -122,7 +108,7 @@ for page in pages:
     # print("data-page-no", page["data-page-no"])
     # page_divs = page.find_all('div')
     # print("divs ", str(len(page_divs)))
-    
+
     # for tag in page.children:
     #     print tag
         # if 'h2' in str(tag.get('class')):
@@ -130,4 +116,3 @@ for page in pages:
         #     class_string = str(tag.get('class'))
         #     if any(key in class_stringc for key in second_layer_keys):
         #         print('here', str(tag))
-
