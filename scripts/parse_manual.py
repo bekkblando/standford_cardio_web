@@ -71,13 +71,6 @@ for tag in pageTableContents.descendants:
             parsed_manual[first_layer][second_layer][cleaned] = {}
             third_layer_keys.append(cleaned)
 
-# JSON Object
-json_contents = json.dumps(
-    parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
-    )
-
-# Pretty print yo
-print(json_contents)
 # Store the section names in a list
 
 # Iterate through all the tags and if the tag's value is in the section list
