@@ -70,22 +70,21 @@ json_contents = json.dumps(
     )
 
 # Pretty print yo
-print(json_contents)
+#print(json_contents)
 # Store the section names in a list
 
 # Iterate through all the tags and if the tag's value is in the section list
 # capture the content aside from tags that have a value in the section list
 
-# Was thinking about going page by page and get the first layer id based on the span with class='ff8'
-# pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
+# Was thinking about going page by page and get the first layer id based on the span with class='h1'
+pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
 
 h2s = manual.findAll("div", {"class": "h2"})
 for tag in h2s:
     cleaned = re.sub(r"<[^>]*>", "", str(tag))
-    print cleaned
+    #print cleaned
 
 first_layer_keys = parsed_manual.keys()
-print first_layer_keys
 
 second_layer_keys = []
 for value in parsed_manual.values():
@@ -94,15 +93,41 @@ for value in parsed_manual.values():
             second_layer_keys.append(key)
         else:
             continue
-print second_layer_keys
 
 first_layer = ""
 second_layer = ""
 
-# for tag in manual.descendants:
-#     if 'h2' in str(tag.get('class')):
+#data-page-no="4"
 
+for page in pages:
+    if page["data-page-no"] in ['1','2','3']:
+        continue
 
+    #first layer(FL) spans, found at bottom of each page. Matches first layer keys
+    FL_spans = page.find("div", {'class': "h1"})
+    FL_spans = FL_spans.find_all("span")
 
+    FL_title = ''
+    for span in FL_spans:
+        FL_title += str(span)
 
+    FL_title = re.sub(r"<[^>]*>", "", str(FL_title)).strip()
+    FL_title = re.sub(r"\d*", "", str(FL_title)).strip()
+    FL_title = FL_title.split()
+    FL_title = " ".join(sorted(set(FL_title), key=FL_title.index))
+
+    if FL_title.upper() in first_layer_keys:
+        first_layer = FL_title
+
+    # print("data-page-no", page["data-page-no"])
+    # page_divs = page.find_all('div')
+    # print("divs ", str(len(page_divs)))
+    
+    # for tag in page.children:
+    #     print tag
+        # if 'h2' in str(tag.get('class')):
+        #     print('here1')
+        #     class_string = str(tag.get('class'))
+        #     if any(key in class_stringc for key in second_layer_keys):
+        #         print('here', str(tag))
 
