@@ -5,7 +5,7 @@ with open("spanless.jade") as file:
         line = lineList[i]
         firstChar = line.strip()[0]
         firstChar_position = line.find(firstChar)
-        #print firstChar_position, line
+        # print firstChar_position, line
         if firstChar == "d" and line.strip() != "div" and firstChar_position > 6:
             print firstChar_position, line
             spaceList.append(firstChar_position)

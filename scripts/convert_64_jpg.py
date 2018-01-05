@@ -6,18 +6,9 @@ import base64
 import os
 
 # Parse the HTML from file
-# TODO Absolute path not ideal - CHANGEME on other file systems
-#r = urllib.request.urlopen('file:///Users/BekkBlando/Documents/github/Stanford-Web/scripts/outhandbook.html').read()
-# rewoked it by using requests instead of urllib bc it was throwing me an error
-url = "file://"  + str(os.getcwd()) + "/outhandbook.html"
-s = requests.Session()
-s.mount("file://", FileAdapter())
-resp = s.get(url)
-r = resp.text
-#print r.text
+raw_manual = open("outhandbook.html", "r")
 
-
-old_manual = BeautifulSoup(r)
+old_manual = BeautifulSoup(raw_manual)
 
 # Get our image tags
 image_tags = old_manual.findAll('img')
