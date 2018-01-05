@@ -19,7 +19,7 @@ secondPageTableContents = manual.find_all(id='pf2')
 contentString = str(firstPageTableContents) + str(secondPageTableContents)
 # Make the BeautifulSoup object from the combined string
 pageTableContents = BeautifulSoup(contentString, "html.parser")
-print(pageTableContents)
+#print(pageTableContents)
 
 parsed_manual = {}
 # Last tags
@@ -41,7 +41,7 @@ for tag in pageTableContents.descendants:
 
     # If it's a first layer tag
     # class: (x2 || x4) && h3
-    print(cleaned, classes)
+    #print(cleaned, classes)
     if(("x2" in classes or "x4" in classes) and ("h3" in classes)):
         first_layer = cleaned
         parsed_manual[cleaned] = {}
@@ -75,3 +75,13 @@ print(json_contents)
 
 # Iterate through all the tags and if the tag's value is in the section list
 # capture the content aside from tags that have a value in the section list
+
+# Was thinking about going page by page and get the first layer id based on the span with class='ff8'
+# pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
+
+h2s = manual.findAll("div", {"class": "h2"})
+for tag in h2s:
+    cleaned = re.sub(r"<[^>]*>", "", str(tag))
+    print cleaned
+
+
