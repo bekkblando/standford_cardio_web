@@ -84,4 +84,25 @@ for tag in h2s:
     cleaned = re.sub(r"<[^>]*>", "", str(tag))
     print cleaned
 
+first_layer_keys = parsed_manual.keys()
+print first_layer_keys
+
+second_layer_keys = []
+for value in parsed_manual.values():
+    for key in value:
+        if key not in second_layer_keys:
+            second_layer_keys.append(key)
+        else:
+            continue
+print second_layer_keys
+
+first_layer = ""
+second_layer = ""
+
+# for tag in manual.descendants:
+#     if 'h2' in str(tag.get('class')):
+
+
+
+
 
