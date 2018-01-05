@@ -77,7 +77,7 @@ json_contents = json.dumps(
     )
 
 # Pretty print yo
-#print(json_contents)
+print(json_contents)
 # Store the section names in a list
 
 # Iterate through all the tags and if the tag's value is in the section list
@@ -108,7 +108,7 @@ for page in pages:
     for span in FL_spans:
         FL_title += str(span)
 
-    # Clean first layer title 
+    # Clean first layer title
     FL_title = re.sub(r"<[^>]*>", "", str(FL_title)).strip()
     FL_title = re.sub(r"\d*", "", str(FL_title)).strip()
     FL_title = FL_title.split()
@@ -163,26 +163,32 @@ for page in pages:
                     second_layer = cleaned.upper()
                     third_layer = ''
         else:
-            # Check to make sure we have all needed levels 
+            # Check to make sure we have all needed levels
             if first_layer != '':
                 if second_layer != '':
                     # Add content in list format to lowest level dic under content key
                     if third_layer != '':
                         if 'content' in parsed_manual[first_layer][second_layer][third_layer]:
-                            parsed_manual[first_layer][second_layer][third_layer]['content'].append(child)
+                            parsed_manual[first_layer][second_layer][third_layer]['content'] += str(child)
                         else:
-                            parsed_manual[first_layer][second_layer][third_layer]['content'] = []
+                            parsed_manual[first_layer][second_layer][third_layer]['content'] = ""
 
-                        #parsed_manual[first_layer][second_layer][third_layer].append(child)
+                        # parsed_manual[first_layer][second_layer][third_layer].append(child)
                     else:
                         if 'content' in parsed_manual[first_layer][second_layer]:
-                            parsed_manual[first_layer][second_layer][content].append(child)
+                            parsed_manual[first_layer][second_layer][content] += str(child)
                         else:
-                            parsed_manual[first_layer][second_layer]['content'] = []
+                            parsed_manual[first_layer][second_layer]['content'] = ""
 
-                        #parsed_manual[first_layer][second_layer].append(child)
+                        # parsed_manual[first_layer][second_layer].append(child)
 
-print parsed_manual
+# JSON Object
+json_contents = json.dumps(
+    parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
+    )
+
+# Pretty print yo
+print(json_contents)
 
 # Having trouble pretty printing JSON
 # Not sure how we want to actually store the content in JSON, currently it is in a list under content key at the lowest level
@@ -194,4 +200,3 @@ print parsed_manual
 
 # # Pretty print yo
 # print(json_contents)
-                    
