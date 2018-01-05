@@ -28,7 +28,7 @@ second_layer = ""
 # Grab our keys for later use
 first_layer_keys = []
 second_layer_keys = []
-third_layer_leys = []
+third_layer_keys = []
 
 # If the first layer tag is
 for tag in pageTableContents.descendants:
@@ -38,7 +38,7 @@ for tag in pageTableContents.descendants:
     # Clean Section names - TODO combine Regex
     cleaned = re.sub(r"<[^>]*>", "", str(tag))
     cleaned = re.sub(r"\S*\d", "", str(cleaned))
-    cleaned = re.sub(r"I*V*\.", "", str(cleaned)).strip()
+    cleaned = re.sub(r"I*V*\.", "", str(cleaned)).strip().upper()
 
     # Get our tags classes
     classes = dict(tag.attrs)["class"]
@@ -63,12 +63,13 @@ for tag in pageTableContents.descendants:
         # If the second layer doesn't exist then it's the first section
         # the first section adds third layers as though they are second layers
         # TODO - Checking for the Surgeon Preferences is not ideal
-        if(not second_layer or cleaned == "Surgeon Preferences"):
+        if(not second_layer or cleaned == "SURGEON PREFERENCES"):
             second_layer = ""
             parsed_manual[first_layer][cleaned] = {}
         else:
+            #print(first_layer, second_layer, cleaned)
             parsed_manual[first_layer][second_layer][cleaned] = {}
-            third_layer_leys.append(cleaned)
+            third_layer_keys.append(cleaned)
 
 # JSON Object
 json_contents = json.dumps(
@@ -76,14 +77,11 @@ json_contents = json.dumps(
     )
 
 # Pretty print yo
-print(json_contents)
+#print(json_contents)
 # Store the section names in a list
 
 # Iterate through all the tags and if the tag's value is in the section list
 # capture the content aside from tags that have a value in the section list
-
-print("first_layer_keys", first_layer_keys)
-print("second_layer_keys", second_layer_keys)
 
 first_layer = ""
 second_layer = ""
@@ -95,52 +93,105 @@ pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
 # Iterating over each page
 # Pulling the first layer key from bottom of page
 # Then checking each div with in page content (pc) to see if it is a new second layer key
-# Adding content to dictionary 
+# Adding content to dictionary
 for page in pages:
     # Skip table of content and contact info
     if page["data-page-no"] in ['1','2','3']:
         continue
 
-    #first layer(FL) spans, found at bottom of each page. Matches first layer keys
+    # first layer(FL) spans, found at bottom of each page. Matches first layer keys
     FL_spans = page.find("div", {'class': "h1"})
     FL_spans = FL_spans.find_all("span")
 
+    # Concatenate all spans together
     FL_title = ''
     for span in FL_spans:
         FL_title += str(span)
 
+    # Clean first layer title 
     FL_title = re.sub(r"<[^>]*>", "", str(FL_title)).strip()
     FL_title = re.sub(r"\d*", "", str(FL_title)).strip()
     FL_title = FL_title.split()
     FL_title = " ".join(sorted(set(FL_title), key=FL_title.index))
 
+    # Check found key against keys in parsed manual
     if FL_title.upper() in first_layer_keys:
-        first_layer = FL_title
+        first_layer = FL_title.upper()
+        second_layer = ""
+
 
     # Grab page content and iterate over looking for second layer keys
     page_content = page.find('div', {'class': 'pc'})
     for child in page_content.children:
+        # """
+        # If the tag doesn't have a section in it such as the second_layer
+        # or third_layer then we want to add that tag to the
+        # content of the last lowest level layer that it didn't have.
+        # """
+        # if the tag doesn't have the second or third layer in it and
+        # the last one set was second_layer
+
         # Skip the footer divs
-        if 'h1' in str(child['class']):
+        if 'h1\'' in str(child['class']):
             continue
 
-        # Checking if div is second layer key
-        if 'h2' in str(child['class']):
+        # Checking if div is h2, and then if it contains a second and/or third layer key
+        if 'h2\'' in str(child['class']):
             cleaned = str(child).strip()
+
+            # Grade keys that span muliple divs
             siblining = child.next_sibling
             if siblining != None and 'h2' in str(siblining['class']):
                 cleaned += str(siblining).strip()
+
+            # Clean text to check if it is a key
             cleaned = re.sub(r"<[^>]*>", "", str(cleaned))
             cleaned = re.sub(r'\s+', " ", str(cleaned))
-            cleaned = re.sub(r'\s*\\\w{0,3}', "", str(cleaned))
+            cleaned = re.sub(r'[^\x00-\x7F]+', "", str(cleaned))
+            cleaned = re.sub(r'amp;', '', str(cleaned))
 
+            # Check if the h2 div contained the second and third layer keys
             if ':' in cleaned:
                 index = cleaned.find(':')
-                second_layer = cleaned[, index]
-                print('second_layer ', second_layer)
-                third_layer = cleaned[index,]
-                print('third_layer', third_layer)
+                second_layer_holder = cleaned[:index]
+                third_layer_holder = cleaned[index + 1:].strip()
+                if second_layer_holder in second_layer_keys and third_layer_holder.upper() in third_layer_keys:
+                    second_layer = second_layer_holder.upper()
+                    third_layer = third_layer_holder.upper()
+            else:
+                if cleaned in second_layer_keys:
+                    second_layer = cleaned.upper()
+                    third_layer = ''
+        else:
+            # Check to make sure we have all needed levels 
+            if first_layer != '':
+                if second_layer != '':
+                    # Add content in list format to lowest level dic under content key
+                    if third_layer != '':
+                        if 'content' in parsed_manual[first_layer][second_layer][third_layer]:
+                            parsed_manual[first_layer][second_layer][third_layer]['content'].append(child)
+                        else:
+                            parsed_manual[first_layer][second_layer][third_layer]['content'] = []
 
-            if cleaned in second_layer_keys:
-                second_layer = cleaned
-            #print("h2", cleaned)
+                        #parsed_manual[first_layer][second_layer][third_layer].append(child)
+                    else:
+                        if 'content' in parsed_manual[first_layer][second_layer]:
+                            parsed_manual[first_layer][second_layer][content].append(child)
+                        else:
+                            parsed_manual[first_layer][second_layer]['content'] = []
+
+                        #parsed_manual[first_layer][second_layer].append(child)
+
+print parsed_manual
+
+# Having trouble pretty printing JSON
+# Not sure how we want to actually store the content in JSON, currently it is in a list under content key at the lowest level
+
+# # JSON Object
+# json_contents = json.dumps(
+#     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
+#     )
+
+# # Pretty print yo
+# print(json_contents)
+                    
