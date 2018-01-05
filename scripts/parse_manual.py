@@ -76,14 +76,6 @@ json_contents = json.dumps(
 # Iterate through all the tags and if the tag's value is in the section list
 # capture the content aside from tags that have a value in the section list
 
-# Was thinking about going page by page and get the first layer id based on the span with class='h1'
-pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
-
-h2s = manual.findAll("div", {"class": "h2"})
-for tag in h2s:
-    cleaned = re.sub(r"<[^>]*>", "", str(tag))
-    #print cleaned
-
 first_layer_keys = parsed_manual.keys()
 
 second_layer_keys = []
@@ -97,8 +89,8 @@ for value in parsed_manual.values():
 first_layer = ""
 second_layer = ""
 
-#data-page-no="4"
-
+# Was thinking about going page by page and get the first layer id based on the span with class='h1'
+pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
 for page in pages:
     if page["data-page-no"] in ['1','2','3']:
         continue
@@ -118,6 +110,21 @@ for page in pages:
 
     if FL_title.upper() in first_layer_keys:
         first_layer = FL_title
+
+    page_content = page.find('div', {'class': 'pc'})
+    for child in page_content.children:
+        if 'h1' in str(child['class']):
+            #print('first_layer', child)
+            continue
+        if 'h2' in str(child['class']):
+            cleaned = str(child).strip()
+            siblining = child.next_sibling
+            if 'h2' in str(siblining['class']):
+                cleaned += str(siblining).strip()
+            cleaned = re.sub(r"<[^>]*>", "", str(cleaned))
+            if cleaned in second_layer_keys:
+
+            print("h2", cleaned)
 
     # print("data-page-no", page["data-page-no"])
     # page_divs = page.find_all('div')
