@@ -95,13 +95,13 @@ pages = manual.find_all(id=re.compile('pf[\d,a-f]*'))
 # Iterating over each page
 # Pulling the first layer key from bottom of page
 # Then checking each div with in page content (pc) to see if it is a new second layer key
-# Adding content to dictionary 
+# Adding content to dictionary
 for page in pages:
     # Skip table of content and contact info
     if page["data-page-no"] in ['1','2','3']:
         continue
 
-    #first layer(FL) spans, found at bottom of each page. Matches first layer keys
+    # first layer(FL) spans, found at bottom of each page. Matches first layer keys
     FL_spans = page.find("div", {'class': "h1"})
     FL_spans = FL_spans.find_all("span")
 
@@ -116,10 +116,20 @@ for page in pages:
 
     if FL_title.upper() in first_layer_keys:
         first_layer = FL_title
+        second_layer = ""
+
 
     # Grab page content and iterate over looking for second layer keys
     page_content = page.find('div', {'class': 'pc'})
     for child in page_content.children:
+        """
+        If the tag doesn't have a section in it such as the second_layer
+        or third_layer then we want to add that tag to the
+        content of the last lowest level layer that it didn't have.
+        """
+        # if the tag doesn't have the second or third layer in it and
+        # the last one set was second_layer
+
         # Skip the footer divs
         if 'h1' in str(child['class']):
             continue
@@ -135,8 +145,10 @@ for page in pages:
             cleaned = re.sub(r'\s*\\\w{0,3}', "", str(cleaned))
 
             if ':' in cleaned:
-                
+
 
             if cleaned in second_layer_keys:
                 second_layer = cleaned
+                # Reset any third layer
+                
             print("h2", cleaned)
