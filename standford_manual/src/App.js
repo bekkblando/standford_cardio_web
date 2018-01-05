@@ -11,6 +11,7 @@ import PrivateRoute from './auth/PrivateRoute';
 
 const App = ({ authenticated, checked }) => (
   <div>
+    <NavBar auth={authenticated} />
     <Router>
       { checked &&
         <div>
@@ -20,7 +21,6 @@ const App = ({ authenticated, checked }) => (
         </div>
       }
     </Router>
-    <NavBar auth={authenticated} />
   </div>
 );
 

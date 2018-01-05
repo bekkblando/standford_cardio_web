@@ -24,10 +24,4 @@ ReactDOM.render(
   </Provider>, document.getElementById('app')
 );
 
-// ReactDOM.render(
-//   <Provider store={store}>
-//     // <NavBar />
-//   </Provider>, document.getElementById('nav-wrapper')
-// )
-
 registerServiceWorker();
