@@ -135,8 +135,12 @@ for page in pages:
             cleaned = re.sub(r'\s*\\\w{0,3}', "", str(cleaned))
 
             if ':' in cleaned:
-                
+                index = cleaned.find(':')
+                second_layer = cleaned[, index]
+                print('second_layer ', second_layer)
+                third_layer = cleaned[index,]
+                print('third_layer', third_layer)
 
             if cleaned in second_layer_keys:
                 second_layer = cleaned
-            print("h2", cleaned)
+            #print("h2", cleaned)
