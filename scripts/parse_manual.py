@@ -37,7 +37,9 @@ for tag in pageTableContents.descendants:
         continue
     # Clean Section names - TODO combine Regex
     cleaned = re.sub(r"<[^>]*>", "", str(tag))
-    cleaned = re.sub(r"\S*\d", "", str(cleaned))
+    #cleaned = re.sub(r"\S*\d", "", str(cleaned)) [^\w]\s*\d+
+    cleaned = re.sub(r"(^|\s)\d+", "", str(cleaned)) 
+    cleaned = re.sub(r'\s+', " ", str(cleaned))
     cleaned = re.sub(r"I*V*\.", "", str(cleaned)).strip().upper()
 
     # Get our tags classes
@@ -65,11 +67,16 @@ for tag in pageTableContents.descendants:
         # TODO - Checking for the Surgeon Preferences is not ideal
         if(not second_layer or cleaned == "SURGEON PREFERENCES"):
             second_layer = ""
+            second_layer_keys.append(cleaned)
             parsed_manual[first_layer][cleaned] = {}
         else:
-            #print(first_layer, second_layer, cleaned)
+            # print(first_layer, second_layer, cleaned)
             parsed_manual[first_layer][second_layer][cleaned] = {}
             third_layer_keys.append(cleaned)
+
+# print first_layer_keys
+# print second_layer_keys
+# print third_layer_keys
 
 # Store the section names in a list
 
@@ -108,10 +115,10 @@ for page in pages:
     FL_title = " ".join(sorted(set(FL_title), key=FL_title.index))
 
     # Check found key against keys in parsed manual
-    if FL_title.upper() in first_layer_keys:
+    if FL_title.upper() != first_layer and FL_title.upper() in first_layer_keys:
         first_layer = FL_title.upper()
         second_layer = ""
-
+        third_layer = ""
 
     # Grab page content and iterate over looking for second layer keys
     page_content = page.find('div', {'class': 'pc'})
@@ -131,6 +138,7 @@ for page in pages:
         # Checking if div is h2, and then if it contains a second and/or third layer key
         if 'h2\'' in str(child['class']):
             cleaned = str(child).strip()
+            
 
             # Grade keys that span muliple divs
             siblining = child.next_sibling
@@ -140,22 +148,63 @@ for page in pages:
             # Clean text to check if it is a key
             cleaned = re.sub(r"<[^>]*>", "", str(cleaned))
             cleaned = re.sub(r'\s+', " ", str(cleaned))
-            cleaned = re.sub(r'[^\x00-\x7F]+', "", str(cleaned))
-            cleaned = re.sub(r'amp;', '', str(cleaned))
+            cleaned = re.sub(r'[^\x00-\x7F]+', "", str(cleaned)).strip()
+            #cleaned = re.sub(r'amp;', '', str(cleaned))
+
+            # print('cleaned', cleaned)
+            # print '****child*****'
+            # print child
 
             # Check if the h2 div contained the second and third layer keys
-            if ':' in cleaned:
+            # Special cases
+            #   SYSTOLIC ANTERIOR MOTION (SAM)
+            #   GI BLEEDING
+            #   SUPPLEMENTAL &AMP; VENTILATOR MANAGEMENT
+            #   OBTAINING CONSENT PROCEDURE LIST
+            if cleaned.count(':') == 1:
+            #if ':' in cleaned:
                 index = cleaned.find(':')
                 second_layer_holder = cleaned[:index]
                 third_layer_holder = cleaned[index + 1:].strip()
+                
+                # Special Cases
+                if third_layer_holder == 'POST-OPERATIVE GI BLEEDING':
+                    third_layer_holder = 'GI BLEEDING'
+
+                # print '****parsed :*******'
+                # print(first_layer, second_layer_holder, third_layer_holder)
+
                 if second_layer_holder in second_layer_keys and third_layer_holder.upper() in third_layer_keys:
                     second_layer = second_layer_holder.upper()
                     third_layer = third_layer_holder.upper()
+                elif cleaned in second_layer_keys:
+                    second_layer = cleaned
+                    third_layer = ''
+            # Someone decide the NEUROLOGIC headers should be formated different than all the other.... 
+            elif cleaned.count(':') == 2:
+                # Parse cleaned text in to layers
+                index_one = cleaned.find(':')
+                index_two = cleaned.rfind(':')
+                second_layer_holder = cleaned[index_one + 1: index_two].strip()
+                third_layer_holder = cleaned[index_two + 1:].strip()
+                
+                # Check that the layer exists
+                if second_layer_holder in second_layer_keys and third_layer_holder.upper() in third_layer_keys:
+                    second_layer = second_layer_holder.upper()
+                    third_layer = third_layer_holder.upper()
+                elif cleaned in second_layer_keys:
+                    second_layer = cleaned
+                    third_layer = ''
+                
             else:
                 if cleaned in second_layer_keys:
                     second_layer = cleaned.upper()
                     third_layer = ''
+
         else:
+            # print '******' 
+            # print child
+            # print(first_layer, second_layer, third_layer)
             # Check to make sure we have all needed levels
             if first_layer != '':
                 if second_layer != '':
@@ -166,14 +215,13 @@ for page in pages:
                         else:
                             parsed_manual[first_layer][second_layer][third_layer]['content'] = ""
 
-                        # parsed_manual[first_layer][second_layer][third_layer].append(child)
                     else:
+                        # print('layers',first_layer, second_layer)
                         if 'content' in parsed_manual[first_layer][second_layer]:
-                            parsed_manual[first_layer][second_layer][content] += str(child)
+                            parsed_manual[first_layer][second_layer]['content'] += str(child)
                         else:
                             parsed_manual[first_layer][second_layer]['content'] = ""
 
-                        # parsed_manual[first_layer][second_layer].append(child)
 
 # JSON Object
 json_contents = json.dumps(
@@ -182,14 +230,3 @@ json_contents = json.dumps(
 
 # Pretty print yo
 print(json_contents)
-
-# Having trouble pretty printing JSON
-# Not sure how we want to actually store the content in JSON, currently it is in a list under content key at the lowest level
-
-# # JSON Object
-# json_contents = json.dumps(
-#     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
-#     )
-
-# # Pretty print yo
-# print(json_contents)
