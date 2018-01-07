@@ -157,9 +157,9 @@ for page in pages:
 
             # Check if the h2 div contained the second and third layer keys
             # Special cases
-            #   SYSTOLIC ANTERIOR MOTION (SAM)
-            #   GI BLEEDING
-            #   OBTAINING CONSENT PROCEDURE LIST
+            #   SYSTOLIC ANTERIOR MOTION (SAM) = SYSTOLIC ANTERIOR MOTION (SAM) OF THE MITRAL VALVE
+            #   GI BLEEDING = POST-OPERATIVE GI BLEEDING
+            #   OBTAINING CONSENT PROCEDURE LIST = OBTAINING CONSENT/PROCEDURE LIST
             #   CARDIAC: TAVR is not a true section it is TRANSCATHETER AORTIC VALVE REPLACEMENT (TAVR) continued 
             if cleaned.count(':') == 1:
                 index = cleaned.find(':')
@@ -169,7 +169,10 @@ for page in pages:
                 # Special Cases
                 if third_layer_holder == 'POST-OPERATIVE GI BLEEDING':
                     third_layer_holder = 'GI BLEEDING'
-
+                elif third_layer_holder == 'SYSTOLIC ANTERIOR MOTION (SAM) OF THE MITRAL VALVE':
+                    third_layer_holder = 'SYSTOLIC ANTERIOR MOTION (SAM)'
+                elif third_layer_holder == 'OBTAINING CONSENT/PROCEDURE LIST':
+                    third_layer_holder = 'OBTAINING CONSENT PROCEDURE LIST'
                 # print '****parsed :*******'
                 # print(first_layer, second_layer_holder, third_layer_holder)
 
@@ -227,5 +230,9 @@ json_contents = json.dumps(
     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
     )
 
+with open('Content.JSON', 'w') as outfile:
+    outfile.write(json_contents)
+
+
 # Pretty print yo
-print(json_contents)
+# print(json_contents)
