@@ -140,7 +140,7 @@ for page in pages:
             cleaned = str(child).strip()
             
 
-            # Grade keys that span muliple divs
+            # Grade keys that span multiple divs
             siblining = child.next_sibling
             if siblining != None and 'h2' in str(siblining['class']):
                 cleaned += str(siblining).strip()
@@ -159,10 +159,9 @@ for page in pages:
             # Special cases
             #   SYSTOLIC ANTERIOR MOTION (SAM)
             #   GI BLEEDING
-            #   SUPPLEMENTAL &AMP; VENTILATOR MANAGEMENT
             #   OBTAINING CONSENT PROCEDURE LIST
+            #   CARDIAC: TAVR is not a true section it is TRANSCATHETER AORTIC VALVE REPLACEMENT (TAVR) continued 
             if cleaned.count(':') == 1:
-            #if ':' in cleaned:
                 index = cleaned.find(':')
                 second_layer_holder = cleaned[:index]
                 third_layer_holder = cleaned[index + 1:].strip()
@@ -182,7 +181,7 @@ for page in pages:
                     third_layer = ''
             # Someone decide the NEUROLOGIC headers should be formated different than all the other.... 
             elif cleaned.count(':') == 2:
-                # Parse cleaned text in to layers
+                # Parse cleaned string in to layers
                 index_one = cleaned.find(':')
                 index_two = cleaned.rfind(':')
                 second_layer_holder = cleaned[index_one + 1: index_two].strip()
@@ -208,7 +207,7 @@ for page in pages:
             # Check to make sure we have all needed levels
             if first_layer != '':
                 if second_layer != '':
-                    # Add content in list format to lowest level dic under content key
+                    # Add content lowest level dic under content key
                     if third_layer != '':
                         if 'content' in parsed_manual[first_layer][second_layer][third_layer]:
                             parsed_manual[first_layer][second_layer][third_layer]['content'] += str(child)
