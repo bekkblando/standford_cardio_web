@@ -74,9 +74,17 @@ for tag in pageTableContents.descendants:
             parsed_manual[first_layer][second_layer][cleaned] = {}
             third_layer_keys.append(cleaned)
 
+# Various prints for testing  
 # print first_layer_keys
 # print second_layer_keys
 # print third_layer_keys
+
+# json_contents = json.dumps(
+#     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
+#     )
+
+# with open('temp.JSON', 'w') as outfile:
+#     outfile.write(json_contents)
 
 # Store the section names in a list
 
@@ -215,14 +223,13 @@ for page in pages:
                         if 'content' in parsed_manual[first_layer][second_layer][third_layer]:
                             parsed_manual[first_layer][second_layer][third_layer]['content'] += str(child)
                         else:
-                            parsed_manual[first_layer][second_layer][third_layer]['content'] = ""
+                            parsed_manual[first_layer][second_layer][third_layer]['content'] = str(child)
 
                     else:
-                        # print('layers',first_layer, second_layer)
                         if 'content' in parsed_manual[first_layer][second_layer]:
                             parsed_manual[first_layer][second_layer]['content'] += str(child)
                         else:
-                            parsed_manual[first_layer][second_layer]['content'] = ""
+                            parsed_manual[first_layer][second_layer]['content'] = str(child)
 
 
 # JSON Object
