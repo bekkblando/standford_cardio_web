@@ -47,7 +47,7 @@ for tag in pageTableContents.descendants:
 
     # If it's a first layer tag
     # class: (x2 || x4) && h3
-    if(("x2" in classes or "x4" in classes) and ("h3" in classes)):
+    if(("x2" in classes or "x4" in classes) and ("h3" in classes or 'h7' in classes)):
         first_layer = cleaned
         first_layer_keys.append(cleaned)
         parsed_manual[cleaned] = {}
@@ -74,17 +74,12 @@ for tag in pageTableContents.descendants:
             parsed_manual[first_layer][second_layer][cleaned] = {}
             third_layer_keys.append(cleaned)
 
-# Various prints for testing  
-# print first_layer_keys
-# print second_layer_keys
-# print third_layer_keys
+json_contents = json.dumps(
+    parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
+    )
 
-# json_contents = json.dumps(
-#     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
-#     )
-
-# with open('temp.JSON', 'w') as outfile:
-#     outfile.write(json_contents)
+with open('Empty.JSON', 'w') as outfile:
+    outfile.write(json_contents)
 
 # Store the section names in a list
 
@@ -107,24 +102,22 @@ for page in pages:
     if page["data-page-no"] in ['1','2','3']:
         continue
 
-    # first layer(FL) spans, found at bottom of each page. Matches first layer keys
-    FL_spans = page.find("div", {'class': "h1"})
-    FL_spans = FL_spans.find_all("span")
+    first_layer_title = ''
 
-    # Concatenate all spans together
-    FL_title = ''
-    for span in FL_spans:
-        FL_title += str(span)
+    # first layer div, found at bottom of each page by looking for class h1. Matches first layer keys
+    first_layer_div = page.find("div", {'class': "h1"})
+    
+    # Clean title name
+    first_layer_title = str(first_layer_div)
+    first_layer_title = re.sub(r"<[^>]*>", "", str(first_layer_title)).strip()
+    first_layer_title = re.sub(r"\d*", "", str(first_layer_title)).strip()
+    first_layer_title = first_layer_title.split()
+    first_layer_title = " ".join(sorted(set(first_layer_title), key=first_layer_title.index))
+    first_layer_title = first_layer_title.upper()
+    first_layer_title = first_layer_title
 
-    # Clean first layer title
-    FL_title = re.sub(r"<[^>]*>", "", str(FL_title)).strip()
-    FL_title = re.sub(r"\d*", "", str(FL_title)).strip()
-    FL_title = FL_title.split()
-    FL_title = " ".join(sorted(set(FL_title), key=FL_title.index))
-
-    # Check found key against keys in parsed manual
-    if FL_title.upper() != first_layer and FL_title.upper() in first_layer_keys:
-        first_layer = FL_title.upper()
+    if first_layer_title != first_layer and first_layer_title in first_layer_keys:
+        first_layer = first_layer_title
         second_layer = ""
         third_layer = ""
 
@@ -147,7 +140,6 @@ for page in pages:
         if 'h2\'' in str(child['class']):
             cleaned = str(child).strip()
             
-
             # Grade keys that span multiple divs
             siblining = child.next_sibling
             if siblining != None and 'h2' in str(siblining['class']):
@@ -158,10 +150,6 @@ for page in pages:
             cleaned = re.sub(r'\s+', " ", str(cleaned))
             cleaned = re.sub(r'[^\x00-\x7F]+', "", str(cleaned)).strip()
             #cleaned = re.sub(r'amp;', '', str(cleaned))
-
-            # print('cleaned', cleaned)
-            # print '****child*****'
-            # print child
 
             # Check if the h2 div contained the second and third layer keys
             # Special cases
@@ -181,8 +169,6 @@ for page in pages:
                     third_layer_holder = 'SYSTOLIC ANTERIOR MOTION (SAM)'
                 elif third_layer_holder == 'OBTAINING CONSENT/PROCEDURE LIST':
                     third_layer_holder = 'OBTAINING CONSENT PROCEDURE LIST'
-                # print '****parsed :*******'
-                # print(first_layer, second_layer_holder, third_layer_holder)
 
                 if second_layer_holder in second_layer_keys and third_layer_holder.upper() in third_layer_keys:
                     second_layer = second_layer_holder.upper()
@@ -212,14 +198,12 @@ for page in pages:
                     third_layer = ''
 
         else:
-            # print '******' 
-            # print child
-            # print(first_layer, second_layer, third_layer)
             # Check to make sure we have all needed levels
             if first_layer != '':
                 if second_layer != '':
                     # Add content lowest level dic under content key
                     if third_layer != '':
+                        # print(first_layer, second_layer, third_layer)
                         if 'content' in parsed_manual[first_layer][second_layer][third_layer]:
                             parsed_manual[first_layer][second_layer][third_layer]['content'] += str(child)
                         else:
