@@ -4,6 +4,11 @@ import os
 import re
 import json
 
+# Program to parse GHS Cardiac handbook(in HTML) in to 3 layer JSON
+# The content of each section is stored under the 'content' of the deepest layer it has
+# The resulting JSON is written to Content.JSON under the same dir as the script is located in 
+
+
 # Parse the HTML from file
 raw_manual = open("new_manual.html", "r")
 
@@ -223,7 +228,6 @@ json_contents = json.dumps(
 
 with open('Content.JSON', 'w') as outfile:
     outfile.write(json_contents)
-
 
 # Pretty print yo
 # print(json_contents)
