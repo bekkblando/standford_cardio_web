@@ -1,0 +1,114 @@
+{
+    "CONTACT INFORMATION": {},
+    "DISEASE PROCESSES &AMP; SURGICAL PROCEDURES": {
+        "ADVANCED HEART FAILURE: VENTRICULAR ASSIST DEVICE (VAD)": {},
+        "AORTIC REGURGITATION": {},
+        "ATRIAL FIBRILLATION (AF)": {},
+        "CARDIAC: TAVR": {},
+        "CONSTRICTIVE PERICARDITIS": {},
+        "CORONARY ARTERY DISEASE AND CABG": {},
+        "DISEASES OF THE AORTA": {},
+        "EXTRACORPOREAL MEMBRANE OXYGENATION (ECMO)": {},
+        "HEART TRANSPLANT": {},
+        "HYPERTROPHIC CARDIOMYOPATHY": {},
+        "INFECTIVE ENDOCARDITIS ROOT ABSCESS": {},
+        "LUNG TRANSPLANT": {},
+        "MITRAL VALVE DISEASE": {},
+        "MYOCARDIAL BRIDGE": {},
+        "TRANSCATHETER AORTIC VALVE REPLACEMENT (TAVR)": {},
+        "TRICUSPID VALVE DISEASE": {}
+    },
+    "POST-OP MANAGEMENT": {
+        "CARDIAC": {
+            "ATRIAL FIBRILLATION &AMP; ELECTROLYTE REPLACEMENT": {},
+            "CHEST PAIN": {},
+            "HEART BLOCKS": {},
+            "HEART FAILURE": {},
+            "PERICARDIAL TAMPONADE": {},
+            "RIGHT VENTRICULAR FAILURE": {},
+            "SYSTOLIC ANTERIOR MOTION (SAM)": {},
+            "VASOPLEGIA": {}
+        },
+        "ENDOCRINE": {
+            "ACUTE HYPERGLYCEMIA AND DIABETES MANAGEMENT": {}
+        },
+        "GI": {
+            "ACUTE HEPATIC DYSFUNCTION": {},
+            "CONSTIPATION AND ILLEUS": {},
+            "GI BLEEDING": {},
+            "MALNUTRITION (TUBE FEEDING TPN)": {}
+        },
+        "GU FEN": {
+            "ACID BASE DISTURBANCES": {},
+            "KIDNEY DISEASE": {},
+            "SODIUM IMBALANCES": {}
+        },
+        "HEMATOLOGY": {
+            "ACUTE BLOOD LOSS ANEMIA AND POST-OPERATIVE BLEEDING": {},
+            "DEEP VEIN THROMBOSIS": {},
+            "HEPARIN INDUCED THROMBOCYTOPENIA (HIT)": {},
+            "TEG": {}
+        },
+        "INFECTIOUS DISEASE": {
+            "CELLULITIS": {},
+            "PNEUMONIA": {},
+            "SEPSIS": {},
+            "URINARY TRACT INFECTION": {}
+        },
+        "NEUROLOGIC": {
+            "DELIRIUM": {},
+            "PAIN CONTROL": {},
+            "SEIZURES": {},
+            "SPINAL CORD ISCHEMIA": {},
+            "STROKE CVA": {}
+        },
+        "PULMONARY": {
+            "ACUTE RESPIRATORY DISTRESS SYNDROME (ARDS)": {},
+            "ATELECTASIS": {},
+            "PNEUMOTHORAX": {},
+            "PULMONARY HYPERTENSION": {}
+        }
+    },
+    "PROCEDURES DEVICES": {
+        "DEVICES": {
+            "IABP": {},
+            "LUMBAR DRAINS": {},
+            "ON Q PUMPS": {},
+            "TEMPORARY PACEMAKERS": {},
+            "WOUND VAC": {}
+        },
+        "PROCEDURES": {
+            "ATRIAL ELECTROGRAMS": {},
+            "BRONCHOSCOPY": {},
+            "DIRECT CURRENT CARDIOVERSION (DCCV)": {},
+            "PACER WIRE (PW) REMOVAL": {},
+            "RAPID SEQUENCE INDUCTION": {}
+        }
+    },
+    "REFERENCE MATERIAL": {
+        "CARDIAC SURGERY PROCEDURE CLEARANCE": {},
+        "POST-OP": {
+            "ABG INTERPRETATION": {},
+            "ADVANCED HEMODYNAMIC MONITORING &AMP; PULMARY ARTERY CATHETERS": {},
+            "COMMON ICU DRIPS": {},
+            "COMMON PO MEDS": {},
+            "DIAGNOSIS TRANSLATION EXAMPLES": {},
+            "END OF LIFE CARE": {},
+            "IICU ADMISSION REQUIREMENTS": {},
+            "IMAGING": {},
+            "INR GOALS": {},
+            "NOTES": {},
+            "PATIENT PROGRESSION CHECKLIST": {},
+            "PROPHYLACTIC MEDICATIONS (GI, VA-PNA, DVT, INFECTION)": {},
+            "SUPPLEMENTAL O2 &AMP; VENTILATOR MANAGEMENT": {},
+            "VAD BOWEL REGIMEN PROTOCOL": {}
+        },
+        "PRE-OP": {
+            "CARDIAC SURGERY PATIENT BLOOD MANAGEMENT PROGRAM": {},
+            "CHECK LIST": {},
+            "OBTAINING CONSENT PROCEDURE LIST": {},
+            "PERIPROCEDURAL ANTICOAGULATION BRIDGING": {}
+        },
+        "SURGEON PREFERENCES": {}
+    }
+}
