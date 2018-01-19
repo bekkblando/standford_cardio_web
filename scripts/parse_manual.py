@@ -12,16 +12,28 @@ def Clean_Section_Name(dirty_Section_Name):
     cleaned_Section_Name = re.sub(r"<[^>]*>", "", str(dirty_Section_Name))
     cleaned_Section_Name = re.sub(r"(^|\s)\d+", "", str(cleaned_Section_Name)) 
     cleaned_Section_Name = re.sub(r'\s+', " ", str(cleaned_Section_Name))
-    cleaned_Section_Name = re.sub(r"I*V*\.", "", str(cleaned_Section_Name)).strip().upper()
+    cleaned_Section_Name = re.sub(r"I*V*\.", "", str(cleaned_Section_Name))
+    # cleaned_Section_Name = re.sub(r"amp;", "", cleaned_Section_Name)
+    cleaned_Section_Name = re.sub(r"\s*\/\s*", " ", cleaned_Section_Name)
+    cleaned_Section_Name = cleaned_Section_Name.strip().upper()
     return cleaned_Section_Name
 
 def Clean_Layer_Title(dirty_Layer_Title):
     cleaned_Layer_Title = re.sub(r"<[^>]*>", "", str(dirty_Layer_Title)).strip()
-    cleaned_Layer_Title = re.sub(r"\d*", "", str(cleaned_Layer_Title)).strip()
+    cleaned_Layer_Title = re.sub(r"\d*", "", cleaned_Layer_Title).strip()
     cleaned_Layer_Title = cleaned_Layer_Title.split()
     cleaned_Layer_Title = " ".join(sorted(set(cleaned_Layer_Title), key=cleaned_Layer_Title.index))
-    cleaned_Layer_Title = cleaned_Layer_Title.upper()
+    # cleaned_Layer_Title = re.sub(r"amp;", "", cleaned_Layer_Title)
+    cleaned_Layer_Title = re.sub(r"\s*\/\s*", " ", cleaned_Layer_Title)
+    cleaned_Layer_Title = cleaned_Layer_Title.strip().upper()
     return cleaned_Layer_Title
+
+def Clean_Key(dirty_Key_Str):
+    cleaned_Key = re.sub(r"<[^>]*>", "", str(dirty_Key_Str))
+    cleaned_Key = re.sub(r'\s+', " ", cleaned_Key)
+    cleaned_Key = re.sub(r'[^\x00-\x7F]+', "", cleaned_Key).strip()
+    cleaned_Key = re.sub(r'\s*\/\s*', ' ', cleaned_Key)
+    return cleaned_Key
 
 # Parse the HTML from file
 raw_manual = open("new_manual.html", "r")
@@ -155,9 +167,10 @@ for page in pages:
                 cleaned += str(siblining).strip()
 
             # Clean text to check if it is a key
-            cleaned = re.sub(r"<[^>]*>", "", str(cleaned))
-            cleaned = re.sub(r'\s+', " ", str(cleaned))
-            cleaned = re.sub(r'[^\x00-\x7F]+', "", str(cleaned)).strip()
+            cleaned = Clean_Key(cleaned)
+            # cleaned = re.sub(r"<[^>]*>", "", str(cleaned))
+            # cleaned = re.sub(r'\s+', " ", str(cleaned))
+            # cleaned = re.sub(r'[^\x00-\x7F]+', "", str(cleaned)).strip()
             #cleaned = re.sub(r'amp;', '', str(cleaned))
 
             # Check if the h2 div contained the second and third layer keys
