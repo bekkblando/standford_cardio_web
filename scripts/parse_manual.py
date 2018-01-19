@@ -8,6 +8,20 @@ import json
 # The content of each section is stored under the 'content' of the deepest layer it has
 # The resulting JSON is written to Content.JSON under the same dir as the script is located in 
 
+def Clean_Section_Name(dirty_Section_Name):
+    cleaned_Section_Name = re.sub(r"<[^>]*>", "", str(dirty_Section_Name))
+    cleaned_Section_Name = re.sub(r"(^|\s)\d+", "", str(cleaned_Section_Name)) 
+    cleaned_Section_Name = re.sub(r'\s+', " ", str(cleaned_Section_Name))
+    cleaned_Section_Name = re.sub(r"I*V*\.", "", str(cleaned_Section_Name)).strip().upper()
+    return cleaned_Section_Name
+
+def Clean_Layer_Title(dirty_Layer_Title):
+    cleaned_Layer_Title = re.sub(r"<[^>]*>", "", str(dirty_Layer_Title)).strip()
+    cleaned_Layer_Title = re.sub(r"\d*", "", str(cleaned_Layer_Title)).strip()
+    cleaned_Layer_Title = cleaned_Layer_Title.split()
+    cleaned_Layer_Title = " ".join(sorted(set(cleaned_Layer_Title), key=cleaned_Layer_Title.index))
+    cleaned_Layer_Title = cleaned_Layer_Title.upper()
+    return cleaned_Layer_Title
 
 # Parse the HTML from file
 raw_manual = open("new_manual.html", "r")
@@ -40,12 +54,8 @@ for tag in pageTableContents.descendants:
     # Don't count content
     if type(tag).__name__ == "NavigableString":
         continue
-    # Clean Section names - TODO combine Regex
-    cleaned = re.sub(r"<[^>]*>", "", str(tag))
-    #cleaned = re.sub(r"\S*\d", "", str(cleaned)) [^\w]\s*\d+
-    cleaned = re.sub(r"(^|\s)\d+", "", str(cleaned)) 
-    cleaned = re.sub(r'\s+', " ", str(cleaned))
-    cleaned = re.sub(r"I*V*\.", "", str(cleaned)).strip().upper()
+    # Clean Section names
+    cleaned = Clean_Section_Name(str(tag))
 
     # Get our tags classes
     classes = dict(tag.attrs)["class"]
@@ -79,17 +89,17 @@ for tag in pageTableContents.descendants:
             parsed_manual[first_layer][second_layer][cleaned] = {}
             third_layer_keys.append(cleaned)
 
-json_contents = json.dumps(
-    parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
-    )
+# For checking JSON hierarchy 
+# json_contents = json.dumps(
+#     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
+#     )
 
-with open('Empty.JSON', 'w') as outfile:
-    outfile.write(json_contents)
+# with open('Empty.JSON', 'w') as outfile:
+#     outfile.write(json_contents)
 
-# Store the section names in a list
-
-# Iterate through all the tags and if the tag's value is in the section list
-# capture the content aside from tags that have a value in the section list
+# Get the manual in a list by page
+# Iterate through all the tags and if a tag is a section title set the layer vars to match 
+# else store the div in the JSON object based on the layer vars
 
 first_layer = ""
 second_layer = ""
@@ -113,14 +123,9 @@ for page in pages:
     first_layer_div = page.find("div", {'class': "h1"})
     
     # Clean title name
-    first_layer_title = str(first_layer_div)
-    first_layer_title = re.sub(r"<[^>]*>", "", str(first_layer_title)).strip()
-    first_layer_title = re.sub(r"\d*", "", str(first_layer_title)).strip()
-    first_layer_title = first_layer_title.split()
-    first_layer_title = " ".join(sorted(set(first_layer_title), key=first_layer_title.index))
-    first_layer_title = first_layer_title.upper()
-    first_layer_title = first_layer_title
+    first_layer_title = Clean_Layer_Title(str(first_layer_div))
 
+    # If it is a new first layer key, reset lower layer keys
     if first_layer_title != first_layer and first_layer_title in first_layer_keys:
         first_layer = first_layer_title
         second_layer = ""
@@ -129,12 +134,11 @@ for page in pages:
     # Grab page content and iterate over looking for second layer keys
     page_content = page.find('div', {'class': 'pc'})
     for child in page_content.children:
-        # """
         # If the tag doesn't have a section in it such as the second_layer
         # or third_layer then we want to add that tag to the
         # content of the last lowest level layer that it didn't have.
-        # """
-        # if the tag doesn't have the second or third layer in it and
+
+        # If the tag doesn't have the second or third layer in it and
         # the last one set was second_layer
 
         # Skip the footer divs
@@ -181,7 +185,7 @@ for page in pages:
                 elif cleaned in second_layer_keys:
                     second_layer = cleaned
                     third_layer = ''
-            # Someone decide the NEUROLOGIC headers should be formated different than all the other.... 
+            # Someone decided the NEUROLOGIC headers should be formated different than all the others.... 
             elif cleaned.count(':') == 2:
                 # Parse cleaned string in to layers
                 index_one = cleaned.find(':')
