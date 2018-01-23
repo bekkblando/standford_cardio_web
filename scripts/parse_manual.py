@@ -3,6 +3,7 @@ import base64
 import os
 import re
 import json
+import copy
 
 # Program to parse GHS Cardiac handbook(in HTML) in to 3 layer JSON
 # The content of each section is stored under the 'content' of the deepest layer it has
@@ -95,18 +96,21 @@ for tag in pageTableContents.descendants:
         if(not second_layer or cleaned == "SURGEON PREFERENCES"):
             second_layer = ""
             second_layer_keys.append(cleaned)
-            parsed_manual[first_layer][cleaned] = {}
+            parsed_manual[first_layer][cleaned] = {'content':''}
         else:
             # print(first_layer, second_layer, cleaned)
-            parsed_manual[first_layer][second_layer][cleaned] = {}
+            parsed_manual[first_layer][second_layer][cleaned] = {'content':''}
             third_layer_keys.append(cleaned)
+
+# Table of Contents for firebase
+ToC_json = copy.deepcopy(parsed_manual)
 
 # For checking JSON hierarchy 
 # json_contents = json.dumps(
 #     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
 #     )
 
-# with open('Empty.JSON', 'w') as outfile:
+# with open('TableOfConents.JSON', 'w') as outfile:
 #     outfile.write(json_contents)
 
 # Get the manual in a list by page
@@ -168,10 +172,6 @@ for page in pages:
 
             # Clean text to check if it is a key
             cleaned = Clean_Key(cleaned)
-            # cleaned = re.sub(r"<[^>]*>", "", str(cleaned))
-            # cleaned = re.sub(r'\s+', " ", str(cleaned))
-            # cleaned = re.sub(r'[^\x00-\x7F]+', "", str(cleaned)).strip()
-            #cleaned = re.sub(r'amp;', '', str(cleaned))
 
             # Check if the h2 div contained the second and third layer keys
             # Special cases
@@ -244,6 +244,17 @@ json_contents = json.dumps(
     )
 
 with open('Content.JSON', 'w') as outfile:
+    outfile.write(json_contents)
+
+firebase_json = {'0':{}}
+firebase_json['0']['Table Of Contents'] = ToC_json
+firebase_json['0']['Manual'] = parsed_manual
+
+json_contents = json.dumps(
+    firebase_json, sort_keys=True, indent=4, separators=(',', ': ')
+    )
+
+with open('firebase.JSON', 'w') as outfile:
     outfile.write(json_contents)
 
 # Pretty print yo
