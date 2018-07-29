@@ -7,16 +7,17 @@ import copy
 
 # Program to parse GHS Cardiac handbook(in HTML) in to 3 layer JSON
 # The content of each section is stored under the 'content' of the deepest layer it has
-# The resulting JSON is written to Content.JSON under the same dir as the script is located in 
+# The resulting JSON is written to Content.JSON under the same dir as the script is located in
 
 def Clean_Section_Name(dirty_Section_Name):
     cleaned_Section_Name = re.sub(r"<[^>]*>", "", str(dirty_Section_Name))
-    cleaned_Section_Name = re.sub(r"(^|\s)\d+", "", str(cleaned_Section_Name)) 
+    cleaned_Section_Name = re.sub(r"(^|\s)\d+", "", str(cleaned_Section_Name))
     cleaned_Section_Name = re.sub(r'\s+', " ", str(cleaned_Section_Name))
     cleaned_Section_Name = re.sub(r"I*V*\.", "", str(cleaned_Section_Name))
     # cleaned_Section_Name = re.sub(r"amp;", "", cleaned_Section_Name)
     cleaned_Section_Name = re.sub(r"\s*\/\s*", " ", cleaned_Section_Name)
     cleaned_Section_Name = cleaned_Section_Name.strip().upper()
+    cleaned_Section_Name = re.sub('&AMP;', 'AND', cleaned_Section_Name)
     return cleaned_Section_Name
 
 def Clean_Layer_Title(dirty_Layer_Title):
@@ -35,6 +36,18 @@ def Clean_Key(dirty_Key_Str):
     cleaned_Key = re.sub(r'[^\x00-\x7F]+', "", cleaned_Key).strip()
     cleaned_Key = re.sub(r'\s*\/\s*', ' ', cleaned_Key)
     return cleaned_Key
+
+def file_name(name):
+    return re.sub(r" ", "-", name).lower()
+
+def set_content(file_path):
+    if(not os.path.isfile(file_path)):
+        print("Manually Add ", file_path)
+        return "load_manually"
+    # Return the appropriate HTML
+    with open(file_path) as html_file:
+        html = html_file.read()
+    return html
 
 # Parse the HTML from file
 raw_manual = open("new_manual.html", "r")
@@ -105,7 +118,7 @@ for tag in pageTableContents.descendants:
 # Table of Contents for firebase
 ToC_json = copy.deepcopy(parsed_manual)
 
-# For checking JSON hierarchy 
+# For checking JSON hierarchy
 # json_contents = json.dumps(
 #     parsed_manual, sort_keys=True, indent=4, separators=(',', ': ')
 #     )
@@ -114,7 +127,7 @@ ToC_json = copy.deepcopy(parsed_manual)
 #     outfile.write(json_contents)
 
 # Get the manual in a list by page
-# Iterate through all the tags and if a tag is a section title set the layer vars to match 
+# Iterate through all the tags and if a tag is a section title set the layer vars to match
 # else store the div in the JSON object based on the layer vars
 
 first_layer = ""
@@ -137,7 +150,7 @@ for page in pages:
 
     # first layer div, found at bottom of each page by looking for class h1. Matches first layer keys
     first_layer_div = page.find("div", {'class': "h1"})
-    
+
     # Clean title name
     first_layer_title = Clean_Layer_Title(str(first_layer_div))
 
@@ -164,7 +177,7 @@ for page in pages:
         # Checking if div is h2, and then if it contains a second and/or third layer key
         if 'h2\'' in str(child['class']):
             cleaned = str(child).strip()
-            
+
             # Grade keys that span multiple divs
             siblining = child.next_sibling
             if siblining != None and 'h2' in str(siblining['class']):
@@ -178,12 +191,12 @@ for page in pages:
             #   SYSTOLIC ANTERIOR MOTION (SAM) = SYSTOLIC ANTERIOR MOTION (SAM) OF THE MITRAL VALVE
             #   GI BLEEDING = POST-OPERATIVE GI BLEEDING
             #   OBTAINING CONSENT PROCEDURE LIST = OBTAINING CONSENT/PROCEDURE LIST
-            #   CARDIAC: TAVR is not a true section it is TRANSCATHETER AORTIC VALVE REPLACEMENT (TAVR) continued 
+            #   CARDIAC: TAVR is not a true section it is TRANSCATHETER AORTIC VALVE REPLACEMENT (TAVR) continued
             if cleaned.count(':') == 1:
                 index = cleaned.find(':')
                 second_layer_holder = cleaned[:index]
                 third_layer_holder = cleaned[index + 1:].strip()
-                
+
                 # Special Cases
                 if third_layer_holder == 'POST-OPERATIVE GI BLEEDING':
                     third_layer_holder = 'GI BLEEDING'
@@ -198,14 +211,14 @@ for page in pages:
                 elif cleaned in second_layer_keys:
                     second_layer = cleaned
                     third_layer = ''
-            # Someone decided the NEUROLOGIC headers should be formated different than all the others.... 
+            # Someone decided the NEUROLOGIC headers should be formated different than all the others....
             elif cleaned.count(':') == 2:
                 # Parse cleaned string in to layers
                 index_one = cleaned.find(':')
                 index_two = cleaned.rfind(':')
                 second_layer_holder = cleaned[index_one + 1: index_two].strip()
                 third_layer_holder = cleaned[index_two + 1:].strip()
-                
+
                 # Check that the layer exists
                 if second_layer_holder in second_layer_keys and third_layer_holder.upper() in third_layer_keys:
                     second_layer = second_layer_holder.upper()
@@ -213,30 +226,58 @@ for page in pages:
                 elif cleaned in second_layer_keys:
                     second_layer = cleaned
                     third_layer = ''
-                
+
             else:
                 if cleaned in second_layer_keys:
                     second_layer = cleaned.upper()
                     third_layer = ''
 
         else:
+            if(first_layer == "DISEASE PROCESSES AMP; SURGICAL PROCEDURES"):
+                print('Problem Child', f'/Users/BekkBlando/Desktop/handbook/{file_name(first_layer)}/{file_name(second_layer)}.html\n')
             # Check to make sure we have all needed levels
             if first_layer != '':
                 if second_layer != '':
                     # Add content lowest level dic under content key
                     if third_layer != '':
-                        # print(first_layer, second_layer, third_layer)
-                        if 'content' in parsed_manual[first_layer][second_layer][third_layer]:
-                            parsed_manual[first_layer][second_layer][third_layer]['content'] += str(child)
-                        else:
-                            parsed_manual[first_layer][second_layer][third_layer]['content'] = str(child)
-
+                        if 'content' not in parsed_manual[first_layer][second_layer][third_layer] or not parsed_manual[first_layer][second_layer][third_layer]['content']:
+                            parsed_manual[first_layer][second_layer][third_layer]['content'] = set_content(f'/Users/BekkBlando/Desktop/handbook/{file_name(first_layer)}/{file_name(second_layer)}/{file_name(third_layer)}.html')
                     else:
-                        if 'content' in parsed_manual[first_layer][second_layer]:
-                            parsed_manual[first_layer][second_layer]['content'] += str(child)
-                        else:
-                            parsed_manual[first_layer][second_layer]['content'] = str(child)
+                        if 'content' not in parsed_manual[first_layer][second_layer] or not parsed_manual[first_layer][second_layer]['content']:
+                            parsed_manual[first_layer][second_layer]['content'] = set_content(f'/Users/BekkBlando/Desktop/handbook/{file_name(first_layer)}/{file_name(second_layer)}.html')
 
+
+
+
+replacement_classes = {
+'red_header': [".fc1", ".fs6"],
+'black_header': [".fc0", ".fs4"],
+'small_reference': [".fs15"],
+'tiny_characters': [".h1d"]
+}
+
+
+def replace_classes(raw):
+    if( "content" not in raw):
+        clean_parsed_manual(raw)
+    else:
+        # raw['content'] = raw['content'].decode('utf-8','ignore').encode("utf-8")
+        raw['content'] = re.sub(r"(\\u....)", "", raw['content'])
+        section = BeautifulSoup(raw['content'], "html.parser")
+        for tag in section.findAll(True):
+            classes = tag['class']
+            tag['class'] = []
+            for key, value in replacement_classes.items():
+                if(all(clas in value for clas in classes)):
+                    tag['class'].append(key)
+        raw["content"] = str(section)
+
+
+def clean_parsed_manual(manual):
+    for key, value in manual.items():
+        replace_classes(value)
+
+# clean_parsed_manual(parsed_manual)
 
 # JSON Object
 json_contents = json.dumps(

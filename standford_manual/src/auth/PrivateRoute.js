@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 
-const PrivateRoute = ({ component, exact = false, path, authenticated }) => (
+const PrivateRoute = ({ component, exact = false, path, authenticated, passedProp = [] }) => (
   <Route
     exact={exact}
     path={path}
     render={props => (
       authenticated ? (
+        props["passedProps"] = passedProp["props"],
         React.createElement(component, props)
       ) : (
         <Redirect to={{
@@ -18,6 +19,7 @@ const PrivateRoute = ({ component, exact = false, path, authenticated }) => (
     )}
   />
 );
+
 
 const { object, bool, string, func } = PropTypes;
 

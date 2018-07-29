@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 #import urllib.request
 import requests
-from requests_file import FileAdapter
 import base64
 import os
 
