@@ -1,6 +1,7 @@
 import firebase from '../../init_firebase';
 import React, { Component } from 'react';
 import Content from './Content';
+import EditContent from './EditContent';
 import NavBar from '../NavBar';
 import { Link } from "react-router-dom";
 
@@ -48,9 +49,14 @@ class Manual extends Component {
                     <div id = {this.props.passedProps.manual_location + "/" + section + "/"} className="collapse">
                       {
                         section != "content" ?
+                        <div className = "card-body">
                           <Manual passedProps={{manual_location: this.props.passedProps.manual_location + "/" + section + "/"}}/>
+                        </div>
                       :
-                        <Link to={ "/viewContent?" + this.props.passedProps.manual_location }> View Content </Link>
+                        <span>
+                          <Link to={ "/editContent?" + this.props.passedProps.manual_location }> Edit Content </Link>
+                          <Link to={ "/viewContent?" + this.props.passedProps.manual_location }> View Content </Link>
+                        </span>
                       }
                     </div>
                   </div>

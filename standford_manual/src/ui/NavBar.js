@@ -3,24 +3,30 @@ import React, { Component } from 'react';
 
 class NavBar extends Component {
   render () {
-      return(
-        <nav className='navbar'>
-          <div id="nav-wrapper">
-            <ul id="nav-mobile" className="left hide-on-med-and-down">
-              <a className="brand-logo right">Cardio</a>
-              { this.props.auth &&
-                <span>
-                  <li><a href="/manual">Manual</a></li>
-                  <li><a href="/logout">Logout</a></li>
-                </span>
-              }
-              { !this.props.auth &&
-                <li><a href="/login">Login</a></li>
-              }
-            </ul>
-          </div>
-        </nav>
-    );
+      if(window.location.pathname != '/viewContent'){
+        return(
+          <nav className = "navbar navbar-expand-lg">
+            <div className = "navbar-nav">
+              <ul className = "navbar-nav">
+                <li className='navbar-brand right'>
+                  <img src="stanford_medicine_logo.png" width="200" alt=""/>
+                </li>
+                { this.props.auth &&
+                    <li className='nav-item'><a className = 'nav-link' href = "/manual">Manual</a></li>
+                }
+                { this.props.auth &&
+                  <li className='nav-item'><a className = 'nav-link' href = "/logout">Logout</a></li>
+                }
+                { !this.props.auth &&
+                  <li className='nav-item'><a href = "/login">Login</a></li>
+                }
+              </ul>
+            </div>
+          </nav>
+      );
+    }else{
+      return(<span></span>)
+    }
   }
 }
 
