@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Manual from './ui/manual/Manual';
+import Versions from './ui/manual/Versions';
 import Content from './ui/manual/Content';
 import EditContent from './ui/manual/EditContent';
 import Login from './auth/Login';
@@ -18,6 +19,7 @@ const App = ({ authenticated, checked }) => (
       { checked &&
         <div>
           <PrivateRoute exact path = "/manual" component={Manual} passedProp={{props: {manual_location: "0/Manual"}}} authenticated={authenticated}/>
+          <PrivateRoute exact path = "/versions" component={Versions} authenticated={authenticated}/>
           <Route path = '/viewContent' component = { Content }  authenticated={authenticated}/>
           <Route path = '/editContent' component = { EditContent }  authenticated={authenticated}/>
           <Route path = "/logout" component = { LogoutButton } />

@@ -15,6 +15,9 @@ class NavBar extends Component {
                     <li className='nav-item'><a className = 'nav-link' href = "/manual">Manual</a></li>
                 }
                 { this.props.auth &&
+                    <li className='nav-item'><a className = 'nav-link' href = "/versions">Versions</a></li>
+                }
+                { this.props.auth &&
                   <li className='nav-item'><a className = 'nav-link' href = "/logout">Logout</a></li>
                 }
                 { !this.props.auth &&

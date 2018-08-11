@@ -18,12 +18,19 @@ class Manual extends Component {
     super(props);
     this.state = {
       loading: false,
-      sections: ''
+      sections: '',
+      version: 0
     };
   }
 
-  saveSection(section){
-
+  deleteSection(location){
+    if (window.confirm("Are you sure you would like to delete this section?")) {
+      let deletion_data = {};
+      deletion_data['/versions/deletion_' + this.state.version] = location;
+      firebase.database().ref().update(deletion_data);
+      firebase.database().ref().update({'/versions/version': this.state.version + 1});
+      firebase.database().ref().child(location).remove();
+    }
   }
 
   componentWillMount() {
@@ -56,12 +63,17 @@ class Manual extends Component {
                         <span>
                           <Link to={ "/editContent?" + this.props.passedProps.manual_location }> Edit Content </Link>
                           <Link to={ "/viewContent?" + this.props.passedProps.manual_location }> View Content </Link>
+                          <button onClick = { (e) => this.deleteSection(this.props.passedProps.manual_location) }>Delete Section</button>
                         </span>
                       }
                     </div>
                   </div>
                 </div>
             sections.push(component);
+        });
+        firebase.database().ref().child("/versions/version").once("value", (section, index) =>{
+        }).then((value) => {
+          this.setState({version: value.val()});
         });
         this.setState({sections: sections, loading: true});
     });
