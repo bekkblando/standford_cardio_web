@@ -5,7 +5,7 @@ cycler==0.10.0
 Django==1.10.2
 enum34==1.1.6
 Flask==0.11.1
-Flask-Cors==3.0.2
+Flask-Cors==3.0.9
 funcsigs==1.0.2
 future==0.16.0
 futures==3.0.5
