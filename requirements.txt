@@ -26,7 +26,7 @@ MarkupSafe==0.23
 matplotlib==1.5.3
 megahal==0.2
 mock==2.0.0
-numpy==1.11.3
+numpy==1.21.0
 oauth2client==3.0.0
 oauthlib==2.0.0
 pbr==1.10.0
